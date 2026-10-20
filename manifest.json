@@ -1,0 +1,45 @@
+{
+  "name": "Mentor · 学期计划",
+  "short_name": "Mentor",
+  "description": "大二上学期科研、竞赛、保研、实习与健身计划",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#f4f6fa",
+  "theme_color": "#1f4e79",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "今日",
+      "short_name": "今日",
+      "url": "./index.html?tab=today"
+    },
+    {
+      "name": "本周复盘",
+      "short_name": "复盘",
+      "url": "./index.html?tab=review"
+    }
+  ]
+}
