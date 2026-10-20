@@ -629,6 +629,30 @@ button.block-row:last-child { border-bottom: 0; }
   justify-self: center;
 }
 .goal-list { display: flex; flex-direction: column; gap: 14px; }
+.learning-topic {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+.learning-topic:last-child { border-bottom: 0; }
+.learning-topic .check { margin-top: 1px; }
+.learning-topic .topic-text { font-size: .82rem; line-height: 1.4; }
+.learning-topic.is-done .topic-text { color: var(--muted); text-decoration: line-through; }
+.learning-topic.is-deliverable .topic-text { font-weight: 650; }
+.learning-list {
+  margin: 4px 0 0;
+  padding-left: 20px;
+  font-size: .8rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.learning-list li { margin-bottom: 4px; }
+.competition-card.is-current {
+  border-left: 3px solid var(--mode-color);
+  padding-left: 9px;
+}
 .update-banner {
   position: fixed;
   left: 50%;
@@ -666,7 +690,7 @@ button.block-row:last-child { border-bottom: 0; }
   width: 100%;
   max-width: 720px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   padding: 6px 6px calc(6px + var(--safe-bottom));
   background: color-mix(in srgb, var(--surface) 92%, transparent);
   backdrop-filter: blur(16px);
@@ -683,7 +707,7 @@ button.block-row:last-child { border-bottom: 0; }
   border: 0;
   background: transparent;
   color: var(--muted);
-  font-size: .64rem;
+  font-size: .6rem;
   font-weight: 650;
   border-radius: 12px;
   cursor: pointer;

@@ -40,6 +40,11 @@
       "name": "本周复盘",
       "short_name": "复盘",
       "url": "./index.html?tab=review"
+    },
+    {
+      "name": "实习技能",
+      "short_name": "学习",
+      "url": "./index.html?tab=learning"
     }
   ]
 }

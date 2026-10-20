@@ -2,7 +2,7 @@
  * Mentor service worker.
  * Bump CACHE_VERSION whenever app.js/styles.css/index.html/plan.js changes.
  */
-const CACHE_VERSION = 'mentor-shell-v1.0.1';
+const CACHE_VERSION = 'mentor-shell-v1.0.2';
 const SCOPE = self.registration.scope;
 const INDEX_URL = new URL('./index.html', SCOPE).href;
 

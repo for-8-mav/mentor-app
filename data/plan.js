@@ -15,8 +15,8 @@
       endDate: "2027-02-28",
       teachingWeek1Start: "2026-09-07",
       teachingWeeks: 16,
-      version: 2,
-      lastUpdated: "2026-10-19"
+      version: 3,
+      lastUpdated: "2026-10-20"
     },
 
     modes: {
@@ -55,9 +55,9 @@
     // 课程已经通过 courses 自动插入；这里只放固定的生活/训练/深度工作锚点。
     weeklyTemplate: {
       mon: [
-        { id: "wake", time: "06:20", end: "06:30", title: "起床", category: "routine", modes: ALL },
-        { id: "gym", time: "06:30", end: "07:45", title: "健身 · 上肢（推）", category: "gym", modes: ALL },
-        { id: "breakfast", time: "07:45", end: "08:00", title: "早餐 / 去教室", category: "routine", modes: ALL },
+        { id: "wake", time: "06:50", end: "07:10", title: "起床", category: "routine", modes: ALL },
+        { id: "breakfast", time: "07:10", end: "07:40", title: "早餐", category: "routine", modes: ALL },
+        { id: "morning", time: "07:40", end: "08:00", title: "去教室 / 晨读", category: "routine", modes: ALL },
         { id: "lunch", time: "12:00", end: "13:30", title: "午餐 + 20 分钟午休", category: "routine", modes: ALL },
         { id: "dinner", time: "18:00", end: "19:00", title: "晚餐 + 散步", category: "routine", modes: ALL },
         { id: "deep", time: "19:00", end: "21:30", title: "课业：当天作业 / 复盘", category: "deep", modes: ["blue", "red"] },
@@ -99,7 +99,7 @@
       fri: [
         { id: "wake", time: "06:50", end: "07:10", title: "起床 / 早餐", category: "routine", modes: ALL },
         { id: "lunch", time: "12:00", end: "13:30", title: "午餐 + 20 分钟午休", category: "routine", modes: ALL },
-        { id: "gym", time: "14:00", end: "15:30", title: "健身 · 下肢 + 核心", category: "gym", modes: ["blue", "red"] },
+        { id: "gym", time: "14:00", end: "15:30", title: "健身 · 上肢（推）", category: "gym", modes: ["blue", "red"] },
         { id: "shower", time: "15:30", end: "16:00", title: "洗澡 / 去教室", category: "routine", modes: ALL },
         { id: "dinner", time: "18:00", end: "19:00", title: "晚餐", category: "routine", modes: ALL },
         { id: "deep", time: "19:00", end: "21:30", title: "铸造赛：队伍 / 工艺方案", category: "deep", modes: ["blue", "red"] },
@@ -111,7 +111,7 @@
         { id: "wake", time: "08:00", end: "08:30", title: "起床 / 早餐", category: "routine", modes: ALL },
         { id: "deep", time: "08:30", end: "11:30", title: "竞赛 / 科研（铸造赛优先）", category: "deep", modes: ["blue", "red"] },
         { id: "lunch", time: "12:00", end: "13:30", title: "午餐 + 午休", category: "routine", modes: ALL },
-        { id: "gym", time: "14:00", end: "15:30", title: "健身 · 全身 / 弱项", category: "gym", modes: ALL },
+        { id: "gym", time: "14:00", end: "15:30", title: "健身 · 下肢 + 核心 / 弱项", category: "gym", modes: ALL },
         { id: "study", time: "16:30", end: "18:00", title: "课业 / 作业", category: "study", modes: ["blue", "red"] },
         { id: "dinner", time: "18:00", end: "19:00", title: "晚餐", category: "routine", modes: ALL },
         { id: "rest", time: "19:00", end: "21:30", title: "自由 / 社交 / 放松", category: "rest", modes: ALL },
@@ -153,6 +153,175 @@
       { id: "c17", name: "工程力学B", day: "fri", start: "10:10", end: "11:50", location: "云工一 B-207", endWeek: 12 },
       { id: "c18", name: "概率论与数理统计", day: "fri", start: "16:10", end: "17:50", location: "云综教 B-302", endWeek: 16 }
     ],
+
+    learning: {
+      goal: "机械设计 / 制造工艺实习",
+      weeklyHours: "3–4h",
+      method: [
+        "20 分钟输入 + 20 分钟动手：看完一个点就立刻在 SolidWorks 或纸上做一遍。",
+        "每个模块必须交一个交付物；没有交付物 = 没学。",
+        "用铸造赛零件当练习对象，学完直接用在比赛里。",
+        "每张图/每份报告找导师或学长改 1 次，记录 3 个改进点。",
+        "周末用 10 分钟复述：能不能用 3 句话讲清楚这个知识点。"
+      ],
+      modules: [
+        {
+          id: "m1",
+          startWeek: 7,
+          endWeek: 8,
+          title: "工程图 + 公差",
+          why: "实习第一周就会让你出图；铸造赛也要交零件图/装配图；面试可能现场考。",
+          topics: [
+            { id: "t1", text: "视图选择、剖视、局部放大" },
+            { id: "t2", text: "尺寸基准与标注完整性" },
+            { id: "t3", text: "公差配合（H7/g6 等）与表面粗糙度" },
+            { id: "t4", text: "GD&T 基础：平面度、平行度、位置度、轮廓度" },
+            { id: "t5", text: "标题栏、技术要求、BOM" }
+          ],
+          methods: [
+            "SolidWorks 官方教程 1h：工程图模块",
+            "临摹 2 张标准零件图（教材/网上），对比自己的标注",
+            "用铸造赛零件出 1 张完整零件图，找导师/学长改",
+            "每张图记录 3 个错误，下一张不再犯"
+          ],
+          deliverable: "3 张完整零件图（支架 / 轴 / 铸件），含公差、粗糙度、标题栏",
+          resources: [
+            { label: "SolidWorks 官方教程（工程图）", url: "https://help.solidworks.com/" },
+            { label: "B 站搜索：SolidWorks 工程图 / 公差配合", url: "https://search.bilibili.com/all?keyword=SolidWorks%20%E5%B7%A5%E7%A8%8B%E5%9B%BE" },
+            { label: "《机械制图》教材：视图 / 剖视 / 标注", url: "" },
+            { label: "《GD&T 几何公差》入门资料", url: "https://search.bilibili.com/all?keyword=GD%26T%20%E5%87%A0%E4%BD%95%E5%85%AC%E5%B7%AE" }
+          ]
+        },
+        {
+          id: "m2",
+          startWeek: 9,
+          endWeek: 10,
+          title: "铸造工艺 + DFM",
+          why: "铸造赛的核心，也是工艺岗面试最常问的：你的设计能不能造出来、怎么造、哪里会出缺陷。",
+          topics: [
+            { id: "t1", text: "分型面、拔模斜度、壁厚、圆角" },
+            { id: "t2", text: "砂芯、浇注系统、冒口/冷铁" },
+            { id: "t3", text: "常见铸造缺陷：缩孔、气孔、夹砂、裂纹" },
+            { id: "t4", text: "DFM 规则：减少砂芯、避免尖角、均匀壁厚" },
+            { id: "t5", text: "成本意识：模具、砂芯、工时、废品率" }
+          ],
+          methods: [
+            "读《铸造工艺学》对应章节 1h，画一张思维导图",
+            "拿铸造赛零件，标出分型面、拔模方向、砂芯位置",
+            "看 2 个铸造厂视频，记录一个实际缺陷案例",
+            "找导师确认你的工艺方案，记录 3 个改进点"
+          ],
+          deliverable: "铸造赛零件的工艺分析报告（分型面、拔模、砂芯、缺陷、改进）",
+          resources: [
+            { label: "《铸造工艺学》教材", url: "" },
+            { label: "B 站搜索：砂型铸造 / 铸造缺陷", url: "https://search.bilibili.com/all?keyword=%E7%A0%82%E5%9E%8B%E9%93%B8%E9%80%A0" },
+            { label: "铸造赛官方资料 / 往届作品", url: "" }
+          ]
+        },
+        {
+          id: "m3",
+          startWeek: 11,
+          endWeek: 12,
+          title: "机加工 / 钣金 / 注塑 + 工艺路线",
+          why: "实习最常见的任务：把一个零件拆成工序，判断能不能加工、怎么装夹、成本大概多少。",
+          topics: [
+            { id: "t1", text: "车、铣、钻、磨的基本能力和精度" },
+            { id: "t2", text: "钣金折弯、冲压、焊接基础" },
+            { id: "t3", text: "注塑基础：拔模、壁厚、浇口、缩水" },
+            { id: "t4", text: "工艺路线：毛坯 → 粗加工 → 半精 → 精加工 → 检验" },
+            { id: "t5", text: "夹具与定位基准基础" }
+          ],
+          methods: [
+            "读《机械制造工艺学》1 章，整理 10 个术语",
+            "选一个简单支架，写 2 条不同工艺路线并对比",
+            "去一次实验室/工厂，看真实机床和装夹",
+            "估算材料费 + 工时费，做一张成本表"
+          ],
+          deliverable: "支架的工艺路线（2 个方案对比）+ 成本估算表",
+          resources: [
+            { label: "《机械制造工艺学》教材", url: "" },
+            { label: "B 站搜索：机械加工工艺 / 钣金 / 注塑", url: "https://search.bilibili.com/all?keyword=%E6%9C%BA%E6%A2%B0%E5%8A%A0%E5%B7%A5%E5%B7%A5%E8%89%BA" },
+            { label: "本地工厂 / 实验室参观", url: "" }
+          ]
+        },
+        {
+          id: "m4",
+          startWeek: 13,
+          endWeek: 14,
+          title: "质量 + 成本 + BOM",
+          why: "工艺岗/质量岗实习都会碰到：怎么检、怎么判断合格、出了问题怎么追。",
+          topics: [
+            { id: "t1", text: "常用量具：卡尺、千分尺、高度规、三坐标" },
+            { id: "t2", text: "SPC、Cp/Cpk、控制图基础" },
+            { id: "t3", text: "8D、5 Why、鱼骨图" },
+            { id: "t4", text: "BOM / ERP / 物料编码基础" },
+            { id: "t5", text: "成本构成：材料、工时、模具、废品率" }
+          ],
+          methods: [
+            "用卡尺量 5 个零件，记录数据并算平均值/极差",
+            "给铸造赛零件写一份检验计划（检什么、用什么、频次）",
+            "用一个实际缺陷做 5 Why 分析",
+            "用 Excel 做一张简单 BOM + 成本表"
+          ],
+          deliverable: "铸造赛零件的质量控制计划 + 成本表",
+          resources: [
+            { label: "《质量管理》基础章节", url: "" },
+            { label: "B 站搜索：SPC / 8D / 三坐标", url: "https://search.bilibili.com/all?keyword=SPC%208D" },
+            { label: "Excel / Python 数据整理", url: "" }
+          ]
+        },
+        {
+          id: "m5",
+          startWeek: 15,
+          endWeek: 16,
+          title: "简历 + 作品集 + 面试",
+          why: "寒假实习 11–12 月投递；没有简历和项目故事，学得再多也展示不出来。",
+          topics: [
+            { id: "t1", text: "一页简历：教育、技能、项目、竞赛" },
+            { id: "t2", text: "3 个项目故事（STAR）" },
+            { id: "t3", text: "SolidWorks 现场测试常见题" },
+            { id: "t4", text: "工艺/公差/DFM 常见面试题" },
+            { id: "t5", text: "作品集 PDF / GitHub README" }
+          ],
+          methods: [
+            "写一页中文简历，找导师/学长改 2 轮",
+            "把铸造赛、多孔结构、data-tool 各写成 1 个 STAR 故事",
+            "做一次 30 分钟 mock interview",
+            "录 2 分钟项目自述，回听并改"
+          ],
+          deliverable: "一页简历 + 3 个项目故事 + 作品集 PDF",
+          resources: [
+            { label: "三一/中联/比亚迪等招聘 JD", url: "" },
+            { label: "牛客 / 实习僧面经", url: "https://www.nowcoder.com/" },
+            { label: "导师/学长 mock interview", url: "" }
+          ]
+        },
+        {
+          id: "m6",
+          startWeek: 17,
+          endWeek: 22,
+          title: "寒假实习投递 + 复盘",
+          why: "把前 10 周学的东西换成一次真实实习/面试反馈；投递本身就是学习。",
+          topics: [
+            { id: "t1", text: "投递 ≥10 家（长沙本地优先）" },
+            { id: "t2", text: "记录每次面试问题与回答" },
+            { id: "t3", text: "复盘：不会的题补进下阶段" },
+            { id: "t4", text: "寒假小项目 / 实验室任务" }
+          ],
+          methods: [
+            "每周投 3–5 家，优先老师/学长推荐",
+            "每次面试后 30 分钟内写复盘",
+            "把不会的问题整理成清单，逐个补",
+            "寒假做 1 个能写进简历的小项目"
+          ],
+          deliverable: "投递记录表 + 面试复盘 + 寒假项目",
+          resources: [
+            { label: "BOSS 直聘 / 实习僧 / 学校就业网", url: "" },
+            { label: "学院老师/辅导员推荐", url: "" }
+          ]
+        }
+      ]
+    },
 
     goals: [
       {

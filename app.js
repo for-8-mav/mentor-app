@@ -9,7 +9,7 @@
   const PLAN = window.PLAN_DATA;
   const STORAGE_KEY = 'mentor.v1';
   const BACKUP_KEY = 'mentor.v1.backup';
-  const APP_VERSION = '1.0.1';
+  const APP_VERSION = '1.0.2';
 
   if (!PLAN) {
     const view = document.getElementById('view');
@@ -100,6 +100,7 @@
       priorityDone: {},
       done: {},
       onlineDone: {},
+      learningDone: {},
       customTasks: {},
       gym: {},
       goals: {},
@@ -170,6 +171,7 @@
       priorityDone,
       done: booleanMap(raw.done),
       onlineDone: booleanMap(raw.onlineDone),
+      learningDone: booleanMap(raw.learningDone),
       customTasks,
       gym: booleanMap(raw.gym),
       goals,
@@ -245,6 +247,24 @@
   }
 
   const onlineDoneKey = (dateStr, id) => `${dateStr}|online|${id}`;
+  const learningModules = () => (PLAN.learning && Array.isArray(PLAN.learning.modules) ? PLAN.learning.modules : []);
+  function currentLearningModule(date = currentDate()) {
+    const modules = learningModules();
+    if (!modules.length) return null;
+    const week = teachingWeek(date);
+    return modules.find((module) => week >= module.startWeek && week <= module.endWeek)
+      || (week < modules[0].startWeek ? modules[0] : modules[modules.length - 1]);
+  }
+  const learningDoneKey = (moduleId, topicId) => `${moduleId}|learning|${topicId}`;
+  function learningProgress(module) {
+    const topics = Array.isArray(module.topics) ? module.topics : [];
+    const total = topics.length + 1; // topics + deliverable
+    const topicsDone = topics.filter((topic) => state.learningDone[learningDoneKey(module.id, topic.id)]).length;
+    const deliverableDone = Boolean(state.learningDone[learningDoneKey(module.id, 'deliverable')]);
+    const done = topicsDone + (deliverableDone ? 1 : 0);
+    return { total, done, pct: total ? Math.round((done / total) * 100) : 0, deliverableDone };
+  }
+
   const isActionable = (block) => !['routine', 'rest'].includes(block.category);
   const blockDoneKey = (dateStr, id) => `${dateStr}|${id}`;
   const isBlockDone = (dateStr, id) => Boolean(state.done[blockDoneKey(dateStr, id)]);
@@ -318,14 +338,14 @@
 
   // ===== 5. Render =====
   function render(resetScroll = false) {
-    if (!['today', 'week', 'goals', 'review', 'settings'].includes(state.tab)) state.tab = 'today';
+    if (!['today', 'week', 'learning', 'goals', 'review', 'settings'].includes(state.tab)) state.tab = 'today';
     document.body.dataset.mode = state.mode;
     const info = modeInfo();
     const modeChipText = $('#mode-chip-text');
     if (modeChipText) modeChipText.textContent = info.label;
     const topbarTitle = $('#topbar-title');
     if (topbarTitle) {
-      const titles = { today: '今日', week: '周计划', goals: '目标', review: '复盘', settings: '设置' };
+      const titles = { today: '今日', week: '周计划', learning: '学习', goals: '目标', review: '复盘', settings: '设置' };
       topbarTitle.textContent = state.tab === 'today' && state.viewDate !== todayKey() ? '计划' : titles[state.tab];
     }
     $$('.tab').forEach((tab) => tab.classList.toggle('is-active', tab.dataset.tab === state.tab));
@@ -335,6 +355,7 @@
     let html = '';
     if (state.tab === 'today') html = renderToday();
     else if (state.tab === 'week') html = renderWeek();
+    else if (state.tab === 'learning') html = renderLearning();
     else if (state.tab === 'goals') html = renderGoals();
     else if (state.tab === 'review') html = renderReview();
     else html = renderSettings();
@@ -417,6 +438,17 @@
       + customs.filter((task) => task.done).length
       + online.filter((course) => state.onlineDone[onlineDoneKey(dk, course.id)]).length;
     const total = actionable.length + customs.length + online.length;
+    const learning = currentLearningModule(date);
+    const learningStats = learning ? learningProgress(learning) : null;
+    let learningNext = null;
+    if (learning) {
+      const topics = Array.isArray(learning.topics) ? learning.topics : [];
+      const nextTopic = topics.find((topic) => !state.learningDone[learningDoneKey(learning.id, topic.id)]);
+      if (nextTopic) learningNext = nextTopic;
+      else if (!state.learningDone[learningDoneKey(learning.id, 'deliverable')]) {
+        learningNext = { id: 'deliverable', text: `交付物：${learning.deliverable}` };
+      }
+    }
     const isToday = dk === todayKey();
     const gymBlock = blocks.find((block) => block.category === 'gym');
     const gymDone = Boolean(state.gym[dk]);
@@ -447,6 +479,16 @@
             <div class="paper-main"><div class="paper-title">${esc(course.name)}</div><div class="paper-meta">${esc(course.start || '')}–${esc(course.end || '')} · 网课，可并行</div></div>
           </div>`;
         }).join('')}
+      </section>` : ''}
+      ${learning ? `<section class="card">
+        <div class="section-head"><h2>本周学习</h2><span class="hint">${esc(learning.title)}</span></div>
+        <p class="small muted">${esc(learning.why)}</p>
+        <div class="settings-row">
+          <div class="s-copy"><strong>${learningNext ? '下一步' : '本模块已完成'}</strong><span>${learningNext ? esc(learningNext.text) : '做交付物，找导师/学长改'}</span></div>
+          <button class="btn btn-sm" type="button" data-action="switch-tab" data-tab="learning">去学习</button>
+        </div>
+        <div class="progress" style="margin-top:8px"><div class="progress-bar" style="width:${learningStats.pct}%"></div></div>
+        <p class="tiny muted" style="margin:6px 0 0">${learningStats.done}/${learningStats.total} · 交付物：${esc(learning.deliverable)}</p>
       </section>` : ''}
       <section class="card">
         <div class="section-head"><h2>时间线</h2><button class="btn btn-sm btn-ghost" type="button" data-action="add-task" data-date="${esc(dk)}">＋ 加一件事</button></div>
@@ -505,6 +547,63 @@
       </section>`;
     }
     return html;
+  }
+
+  function learningTopicRow(module, topic, isDeliverable = false) {
+    const done = Boolean(state.learningDone[learningDoneKey(module.id, topic.id)]);
+    return `<div class="learning-topic ${done ? 'is-done' : ''} ${isDeliverable ? 'is-deliverable' : ''}">
+      <button class="check ${done ? 'is-done' : ''}" type="button" data-action="toggle-learning" data-module="${esc(module.id)}" data-topic="${esc(topic.id)}" aria-label="切换完成状态"></button>
+      <span class="topic-text">${esc(topic.text)}</span>
+    </div>`;
+  }
+
+  function renderLearning() {
+    const learning = PLAN.learning;
+    if (!learning || !Array.isArray(learning.modules) || !learning.modules.length) {
+      return '<div class="empty">还没有学习路线。告诉我想实习的方向，我来补。</div>';
+    }
+    const module = currentLearningModule();
+    if (!module) return '<div class="empty">还没有当前学习模块。</div>';
+    const topics = Array.isArray(module.topics) ? module.topics : [];
+    const methods = Array.isArray(module.methods) ? module.methods : [];
+    const resources = Array.isArray(module.resources) ? module.resources : [];
+    const globalMethods = Array.isArray(learning.method) ? learning.method : [];
+    const progress = learningProgress(module);
+    const modules = learningModules();
+    const deliverableTopic = { id: 'deliverable', text: `交付物：${module.deliverable}` };
+    return `
+      <section class="card">
+        <div class="section-head"><h2>实习技能路线</h2><span class="hint">${esc(learning.goal)}</span></div>
+        <p class="small muted">每周 ${esc(learning.weeklyHours)}。${esc(globalMethods[0] || '')}</p>
+        <div class="progress"><div class="progress-bar" style="width:${progress.pct}%"></div></div>
+        <div class="goal-meta"><span>${esc(module.title)} · 第 ${module.startWeek}–${module.endWeek} 周</span><span>${progress.done}/${progress.total}</span></div>
+      </section>
+      <section class="card">
+        <div class="section-head"><h2>${esc(module.title)}</h2><span class="hint">当前模块 · 第 ${module.startWeek}–${module.endWeek} 周</span></div>
+        <p class="small">${esc(module.why)}</p>
+        <div class="section-head" style="margin-top:14px"><h2>学什么</h2><span class="hint">勾掉一个算一个</span></div>
+        ${topics.map((topic) => learningTopicRow(module, topic)).join('')}
+        ${learningTopicRow(module, deliverableTopic, true)}
+        <div class="section-head" style="margin-top:14px"><h2>怎么学</h2></div>
+        <ul class="learning-list">${methods.map((method) => `<li>${esc(method)}</li>`).join('')}</ul>
+        <div class="section-head" style="margin-top:14px"><h2>资源</h2></div>
+        ${resources.map((resource) => resource.url
+          ? `<div class="paper-row"><div class="paper-main"><div class="paper-title"><a href="${esc(resource.url)}" target="_blank" rel="noopener">${esc(resource.label)}</a></div></div></div>`
+          : `<div class="paper-row"><div class="paper-main"><div class="paper-title">${esc(resource.label)}</div></div></div>`).join('')}
+      </section>
+      <section class="card">
+        <div class="section-head"><h2>整条路线</h2><span class="hint">第 ${modules[0].startWeek}–${modules[modules.length - 1].endWeek} 周</span></div>
+        ${modules.map((item) => `<div class="competition-card ${item.id === module.id ? 'is-current' : ''}">
+          <div class="c-top"><h3>${esc(item.title)}</h3><span class="chip">第 ${item.startWeek}–${item.endWeek} 周</span></div>
+          <p>${esc(item.deliverable)}</p>
+        </div>`).join('')}
+      </section>
+      <section class="card">
+        <div class="section-head"><h2>每周怎么用</h2></div>
+        <ul class="learning-list">${globalMethods.slice(1).map((method) => `<li>${esc(method)}</li>`).join('')}</ul>
+        <p class="tiny muted" style="margin:8px 0 0">每完成一个模块，把交付物拿去给导师/学长看一次；没有反馈就不算完成。</p>
+      </section>
+    `;
   }
 
   function goalCard(goal) {
@@ -664,7 +763,8 @@
         <div class="about">
           Mentor · 大二上学期计划<br>
           App 版本 ${APP_VERSION} · 计划版本 ${esc(PLAN.meta.version)} · 更新 ${esc(PLAN.meta.lastUpdated)}<br>
-          课表尚未导入；当前为通用模板。课表到了以后改 <code>data/plan.js</code> 的 <code>courses</code> 和周模板。<br>
+          课表已导入 18 条（教学周 1 = 2026-09-07）；12 周课 5 门，其余 16 周；晚上 5G/无人机是网课。<br>
+          学习路线：工程图 → 铸造工艺 → 机加工 → 质量 → 简历，见“学习”页。<br>
           当前地址：<span class="tiny">${esc(location.href)}</span>
         </div>
       </section>
@@ -907,6 +1007,14 @@
         render(false);
         break;
       }
+      case 'toggle-learning': {
+        const key = learningDoneKey(el.dataset.module, el.dataset.topic);
+        if (state.learningDone[key]) delete state.learningDone[key];
+        else state.learningDone[key] = true;
+        save(true);
+        render(false);
+        break;
+      }
       case 'prev-day':
         state.viewDate = dateKey(addDays(currentDate(), -1));
         save();
@@ -1127,7 +1235,7 @@
   }
 
   const tabParam = new URLSearchParams(location.search).get('tab');
-  if (['today', 'week', 'goals', 'review', 'settings'].includes(tabParam)) state.tab = tabParam;
+  if (['today', 'week', 'learning', 'goals', 'review', 'settings'].includes(tabParam)) state.tab = tabParam;
 
   // A fresh open always starts on today, but keeps the last tab.
   state.viewDate = todayKey();
